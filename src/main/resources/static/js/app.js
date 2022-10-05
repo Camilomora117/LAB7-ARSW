@@ -1,8 +1,10 @@
-var apimock = apimock;
+var apiclient = apiclient;
 
 var app = (function (){
     var author;
     var blueprintName;
+    var canvas = document.getElementById("myCanvas"),
+        context = canvas.getContext("2d");
 
     function getName() {
             $("#name").text(author + "'s " + "blueprints:");
@@ -13,7 +15,7 @@ var app = (function (){
         if (author === "") {
             alert("Debe ingresar un nombre");
         } else {
-            apimock.getBlueprintsByAuthor(author,authorData);
+            apiclient.getBlueprintsByAuthor(author,authorData);
         }
      }
 
@@ -48,27 +50,58 @@ var app = (function (){
                  author = $("#author").val();
                  blueprintName = data.id;
                  $("#nameblu").text("Current blueprint: " + blueprintName);
-                 apimock.getBlueprintByAuthorAndName(author, blueprintName, printPoints);
+                 apiclient.getBlueprintByAuthorAndName(author, blueprintName, printAuthor);
              }
 
-         function printPoints(data) {
+         function printAuthor(data) {
                  const puntos = data.points;
                  var c = document.getElementById("myCanvas");
                  var ctx = c.getContext("2d");
                  ctx.clearRect(0, 0, c.width, c.height);
-                 ctx.restore();
                  ctx.beginPath();
                  for (let i = 1; i < puntos.length; i++) {
                      ctx.moveTo(puntos[i - 1].x, puntos[i - 1].y);
                      ctx.lineTo(puntos[i].x, puntos[i].y);
-                     if (i === puntos.length - 1) {
-                         ctx.moveTo(puntos[i].x, puntos[i].y);
-                         ctx.lineTo(puntos[0].x, puntos[0].y);
-                     }
                  }
                  ctx.stroke();
+
              }
+         function fun(){
+         }
+
+         function init(){
+            let coords = canvas.getBoundingClientRect();
+            apiclient.addPoints((event.clientX - (screen.width/2)), (event.clientY - Math.round(coords.top) - 1), author, blueprintName, getNameAuthorBlueprints);
+            apiclient.getBlueprintByAuthorAndName(author, blueprintName, printAuthor);
+         }
+
+        function deleteBp(){
+         apiclient.deleteBp(author, blueprintName).then(() => {
+         deleteCanvas();
+         getNameAuthorBlueprints();
+         })
+         .catch(err => console.log(err))
+         }
+
+         function deleteCanvas(){
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0, 0, c.width, c.height);
+
+         }
+
+         function createBp(){
+            var bpName = prompt("Por favor digite el nombre del plano", "")
+            apiclient.createBp(author, bpName).then(()=>{
+                getNameAuthorBlueprints();
+            })
+            .catch(err => console.log(err))
+         }
+
      return{
+        createBp: createBp,
+        deleteBp: deleteBp,
+        init,init,
         getBlueprintByAuthorAndName:getBlueprintByAuthorAndName,
         getNameAuthorBlueprints: getNameAuthorBlueprints
      }

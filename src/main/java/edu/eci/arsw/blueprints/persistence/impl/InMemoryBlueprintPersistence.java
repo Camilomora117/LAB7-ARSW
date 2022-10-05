@@ -73,4 +73,10 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
     public Set<Blueprint> getAllBlueprints() throws BlueprintPersistenceException {
         return new HashSet<Blueprint>(blueprints.values());
     }
+
+    @Override
+    public void deleteBlueprint(String author, String bpname) {
+        blueprints.remove(new Tuple<>(author, bpname));
+    }
+
 }

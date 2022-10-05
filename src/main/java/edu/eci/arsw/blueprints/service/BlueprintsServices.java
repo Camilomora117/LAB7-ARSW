@@ -84,4 +84,13 @@ public class BlueprintsServices {
         return blueprintsWhitFilter;
     }
 
+    /**
+     * Delete Blueprint
+     * @param author name author
+     * @param bpname name blueprint
+     */
+    public void deleteBlueprint(String author, String bpname) {
+        bpp.deleteBlueprint(author, bpname);
+    }
+
 }

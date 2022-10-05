@@ -28,14 +28,14 @@ import javax.print.attribute.standard.PageRanges;
  * @author hcadavid
  */
 @RestController
-@RequestMapping(value = "/v1/blueprints")
+@RequestMapping(value = "/blueprints")
 public class BlueprintAPIController {
 
     @Autowired
     BlueprintsServices blueprintsServices;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getBluePrints() {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getBluePrint() {
         try {
             Set<Blueprint> blueprints = blueprintsServices.getAllBlueprints();
             Gson gson = new Gson();
@@ -46,8 +46,9 @@ public class BlueprintAPIController {
         }
     }
 
-    @GetMapping("/{author}")
-    public ResponseEntity<?> getAuthor(@PathVariable String author) {
+
+    @RequestMapping(path = "/{author}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getBlueprintByAuthor(@PathVariable String author) {
         try {
             Set<Blueprint> blueprints = blueprintsServices.getBlueprintsByAuthor(author);
             Gson gson = new Gson();
@@ -58,8 +59,8 @@ public class BlueprintAPIController {
         }
     }
 
-    @GetMapping("/{author}/{bpname}")
-    public ResponseEntity<?> getBlueprintAuthor(@PathVariable String author, @PathVariable String bpname) {
+    @RequestMapping(path = "/{author}/{bpname}" , method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getBlueprintByAuthorName(@PathVariable String author, @PathVariable String bpname) {
         try {
             Blueprint blueprint = blueprintsServices.getBlueprint(author, bpname);
             Gson gson = new Gson();
@@ -70,9 +71,8 @@ public class BlueprintAPIController {
         }
     }
 
-    @RequestMapping(path = "/create",method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public ResponseEntity<?> addBlueprint(@RequestBody Blueprint blueprint) {
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> postBlueprint(@RequestBody Blueprint blueprint) {
         try {
             blueprintsServices.addNewBlueprint(blueprint);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -82,9 +82,8 @@ public class BlueprintAPIController {
         }
     }
 
-    @RequestMapping(path = "/update/{author}/{bpname}",method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public ResponseEntity<?> updateBlueprint(@PathVariable("author") String author, @PathVariable("bpname") String bpname, @RequestBody Blueprint blueprint) {
+    @RequestMapping(path = "/{author}/{bpname}",method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> putBlueprint(@PathVariable String author, @PathVariable String bpname, @RequestBody Blueprint blueprint) {
         try {
             blueprintsServices.updateBlueprint(author, bpname, blueprint);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -93,6 +92,13 @@ public class BlueprintAPIController {
             return new ResponseEntity<>( "No se pudo actualizar el Blueprint", HttpStatus.NOT_FOUND);
         }
     }
+
+    @RequestMapping(path = "/{author}/{bpname}", method = RequestMethod.DELETE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteBlueprint(@PathVariable String author, @PathVariable String bpname) throws BlueprintNotFoundException {
+        blueprintsServices.deleteBlueprint(author, bpname);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
 
 }
 

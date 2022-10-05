@@ -12,6 +12,7 @@ text-align: center;
 }
 
 .tabla, .autor{
+width : 95%;
 position:relative;
 left: 4%;
 }
